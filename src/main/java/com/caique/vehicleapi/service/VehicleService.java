@@ -79,4 +79,8 @@ public class VehicleService {
         vehicle.setActive(false);
         repository.save(vehicle);
     }
+
+    public List<Vehicle> getDeleted() {
+        return repository.findByActiveFalse();
+    }
 }

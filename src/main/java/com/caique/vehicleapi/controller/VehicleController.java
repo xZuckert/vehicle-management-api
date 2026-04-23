@@ -61,4 +61,11 @@ public class VehicleController {
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
+
+    // see deleted data using GET {{base_url}}/vehicles/deleted
+    @GetMapping("/deleted")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Vehicle> getDeleted() {
+        return service.getDeleted();
+    }
 }
