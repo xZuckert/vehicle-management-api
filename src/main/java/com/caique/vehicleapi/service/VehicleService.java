@@ -42,9 +42,33 @@ public class VehicleService {
         // brand, model, year, color, price
         existing.setBrand(updated.getBrand());
         existing.setModel(updated.getModel());
-        existing.setVehicleYear(existing.getVehicleYear());
-        existing.setColor(existing.getColor());
-        existing.setPrice(existing.getPrice());
+        existing.setVehicleYear(updated.getVehicleYear());
+        existing.setColor(updated.getColor());
+        existing.setPrice(updated.getPrice());
+
+        return repository.save(existing);
+    }
+
+    // patch vehicle
+    public Vehicle patch(Long id, Vehicle updated) {
+
+        Vehicle existing = getById(id);
+
+        if (updated.getBrand() != null) {
+            existing.setBrand(updated.getBrand());
+        }
+        if (updated.getModel() != null) {
+            existing.setModel(updated.getModel());
+        }
+        if (updated.getVehicleYear() != null) {
+            existing.setVehicleYear(updated.getVehicleYear());
+        }
+        if (updated.getColor() != null) {
+            existing.setColor(updated.getColor());
+        }
+        if (updated.getPrice() != null) {
+            existing.setPrice(updated.getPrice());
+        }
 
         return repository.save(existing);
     }

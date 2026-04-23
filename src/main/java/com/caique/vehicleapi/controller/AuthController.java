@@ -1,16 +1,15 @@
 package com.caique.vehicleapi.controller;
 
+import com.caique.vehicleapi.dto.AuthResponse;
 import com.caique.vehicleapi.dto.LoginRequest;
 import com.caique.vehicleapi.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -21,7 +20,7 @@ public class AuthController {
     private final JwtService jwtService;
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest req) {
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest req) {
 
         Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -30,6 +29,8 @@ public class AuthController {
                 )
         );
 
-        return jwtService.generateToken((UserDetails) auth.getPrincipal());
+        String token = jwtService.generateToken((UserDetails) auth.getPrincipal());
+
+        return ResponseEntity.ok(new AuthResponse(token, "Bearer"));
     }
 }

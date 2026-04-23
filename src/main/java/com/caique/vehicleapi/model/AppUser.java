@@ -1,11 +1,10 @@
 package com.caique.vehicleapi.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -17,5 +16,6 @@ public class AppUser {
 
     private String username;
     private String password;
-    private String role; // ROLE_USER / ROLE_ADMIN
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles; // ROLE_USER / ROLE_ADMIN
 }

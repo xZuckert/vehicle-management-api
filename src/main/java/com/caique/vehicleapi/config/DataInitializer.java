@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
+
 @Configuration
 @RequiredArgsConstructor
 public class DataInitializer {
@@ -22,7 +24,7 @@ public class DataInitializer {
                 AppUser user = new AppUser();
                 user.setUsername("admin");
                 user.setPassword(encoder.encode("123"));
-                user.setRole("ROLE_ADMIN");
+                user.setRoles(List.of("ROLE_ADMIN"));
 
                 repo.save(user);
             }
