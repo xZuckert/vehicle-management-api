@@ -21,12 +21,24 @@ public class VehicleService {
 
     // find by ID
     public Vehicle getById(Long id) {
-        return repository.findByIdAndActiveTrue(id).orElseThrow(() -> new RuntimeException("Vehivle not found"));
+        return repository.findByIdAndActiveTrue(id).orElseThrow(() -> new RuntimeException("Vehicle not found"));
     }
 
-    // find by brand
-    public List<Vehicle> getByBrand(String brand) {
-        return repository.findByBrandAndActiveTrue(brand);
+    // find with filters
+    public List<Vehicle> getWithFilters(
+            String brand,
+            Integer year,
+            String color,
+            Double minPrice,
+            Double maxPrice
+    ) {
+        return repository.findByActiveTrue().stream()
+                .filter(v -> brand == null || v.getBrand().equalsIgnoreCase(brand))
+                .filter(v -> year == null || (v.getVehicleYear() != null && v.getVehicleYear().equals(year)))
+                .filter(v -> color == null || (v.getColor() != null && v.getColor().equalsIgnoreCase(color)))
+                .filter(v -> minPrice == null || v.getPrice() >= minPrice)
+                .filter(v -> maxPrice == null || v.getPrice() <= maxPrice)
+                .toList();
     }
 
     // create vehicle

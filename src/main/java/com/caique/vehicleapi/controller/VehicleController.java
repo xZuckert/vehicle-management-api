@@ -20,11 +20,14 @@ public class VehicleController {
     // GET all
     @GetMapping
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public List<Vehicle> getAll(@RequestParam(required = false) String brand) {
-        if (brand != null) {
-            return service.getByBrand(brand); // filter by brand param
-        }
-        return service.getAll();
+    public List<Vehicle> getAll(
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) String color,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice
+    ) {
+        return service.getWithFilters(brand, year, color, minPrice, maxPrice);
     }
 
     // Get by ID
