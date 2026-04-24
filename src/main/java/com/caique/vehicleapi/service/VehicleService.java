@@ -1,5 +1,7 @@
 package com.caique.vehicleapi.service;
 
+import com.caique.vehicleapi.dto.VehicleRequest;
+import com.caique.vehicleapi.dto.VehicleResponse;
 import com.caique.vehicleapi.model.Vehicle;
 import com.caique.vehicleapi.repository.VehicleRepository;
 import org.springframework.stereotype.Service;
@@ -15,17 +17,23 @@ public class VehicleService {
     }
     
     // find all
-    public List<Vehicle> getAll(){
-        return repository.findByActiveTrue();
+    public List<VehicleResponse> getAll(){
+        return repository.findByActiveTrue()
+                .stream()
+                .map(this::toResponse)
+                .toList();
     }
 
     // find by ID
-    public Vehicle getById(Long id) {
-        return repository.findByIdAndActiveTrue(id).orElseThrow(() -> new RuntimeException("Vehicle not found"));
+    public VehicleResponse getById(Long id) {
+        return toResponse(
+                repository.findByIdAndActiveTrue(id)
+                        .orElseThrow(() -> new RuntimeException("Vehicle not found"))
+        );
     }
 
     // find with filters
-    public List<Vehicle> getWithFilters(
+    public List<VehicleResponse> getWithFilters(
             String brand,
             Integer year,
             String color,
@@ -38,61 +46,78 @@ public class VehicleService {
                 .filter(v -> color == null || (v.getColor() != null && v.getColor().equalsIgnoreCase(color)))
                 .filter(v -> minPrice == null || v.getPrice() >= minPrice)
                 .filter(v -> maxPrice == null || v.getPrice() <= maxPrice)
+                .map(this::toResponse)
                 .toList();
     }
 
     // create vehicle
-    public Vehicle create(Vehicle vehicle) {
-        vehicle.setId(null);
-        vehicle.setActive(true);
-        return repository.save(vehicle);
+    public VehicleResponse create(VehicleRequest request) {
+
+        Vehicle v = new Vehicle();
+        v.setBrand(request.brand());
+        v.setModel(request.model());
+        v.setVehicleYear(request.vehicleYear());
+        v.setColor(request.color());
+        v.setPrice(request.price());
+        v.setActive(true);
+
+        return toResponse(repository.save(v));
     }
 
     // update vehicle
-    public Vehicle update(Long id, Vehicle updated) {
-        Vehicle existing = getById(id);
-        // brand, model, year, color, price
-        existing.setBrand(updated.getBrand());
-        existing.setModel(updated.getModel());
-        existing.setVehicleYear(updated.getVehicleYear());
-        existing.setColor(updated.getColor());
-        existing.setPrice(updated.getPrice());
+    public VehicleResponse update(Long id, VehicleRequest request) {
 
-        return repository.save(existing);
+        Vehicle existing = repository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+        existing.setBrand(request.brand());
+        existing.setModel(request.model());
+        existing.setVehicleYear(request.vehicleYear());
+        existing.setColor(request.color());
+        existing.setPrice(request.price());
+
+        return toResponse(repository.save(existing));
     }
 
     // patch vehicle
-    public Vehicle patch(Long id, Vehicle updated) {
+    public VehicleResponse patch(Long id, VehicleRequest request) {
 
-        Vehicle existing = getById(id);
+        Vehicle existing = repository.findByIdAndActiveTrue(id).orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
-        if (updated.getBrand() != null) {
-            existing.setBrand(updated.getBrand());
-        }
-        if (updated.getModel() != null) {
-            existing.setModel(updated.getModel());
-        }
-        if (updated.getVehicleYear() != null) {
-            existing.setVehicleYear(updated.getVehicleYear());
-        }
-        if (updated.getColor() != null) {
-            existing.setColor(updated.getColor());
-        }
-        if (updated.getPrice() != null) {
-            existing.setPrice(updated.getPrice());
-        }
+        if (request.brand() != null) existing.setBrand(request.brand());
+        if (request.model() != null) existing.setModel(request.model());
+        if (request.vehicleYear() != null) existing.setVehicleYear(request.vehicleYear());
+        if (request.color() != null) existing.setColor(request.color());
+        if (request.price() != null) existing.setPrice(request.price());
 
-        return repository.save(existing);
+        return toResponse(repository.save(existing));
     }
 
     // soft delete
     public void delete(Long id) {
-        Vehicle vehicle = getById(id);
+
+        Vehicle vehicle = repository.findByIdAndActiveTrue(id).orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
         vehicle.setActive(false);
         repository.save(vehicle);
     }
 
-    public List<Vehicle> getDeleted() {
-        return repository.findByActiveFalse();
+    public List<VehicleResponse> getDeleted() {
+        return repository.findByActiveFalse()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    // aux method
+    private VehicleResponse toResponse(Vehicle v) {
+        return new VehicleResponse(
+                v.getId(),
+                v.getBrand(),
+                v.getModel(),
+                v.getVehicleYear(),
+                v.getColor(),
+                v.getPrice()
+        );
     }
 }
