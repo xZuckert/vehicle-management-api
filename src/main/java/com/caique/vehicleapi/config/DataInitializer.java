@@ -1,5 +1,6 @@
 package com.caique.vehicleapi.config;
 
+import com.caique.vehicleapi.dto.LoginRequest;
 import com.caique.vehicleapi.model.AppUser;
 import com.caique.vehicleapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 

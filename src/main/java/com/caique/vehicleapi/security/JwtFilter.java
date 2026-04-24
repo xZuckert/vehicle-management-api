@@ -32,7 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
 
         // libera login
-        if (path.startsWith("/auth")) {
+        if (path.contains("/auth")) {
             filterChain.doFilter(request, response);
             return;
         }
