@@ -74,4 +74,11 @@ public class VehicleController {
     public List<VehicleResponse> getDeleted() {
         return service.getDeleted();
     }
+
+    // see deleted data using ID
+    @GetMapping("/deleted/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public VehicleResponse getDeletedById(@PathVariable Long id) {
+        return service.getDeletedById(id);
+    }
 }

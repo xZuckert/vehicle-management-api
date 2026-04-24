@@ -102,11 +102,20 @@ public class VehicleService {
         repository.save(vehicle);
     }
 
+    // get deleteds
     public List<VehicleResponse> getDeleted() {
         return repository.findByActiveFalse()
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    // get deleteds by ID
+    public VehicleResponse getDeletedById(Long id) {
+        return toResponse(
+                repository.findByIdAndActiveFalse(id)
+                .orElseThrow(() -> new RuntimeException("Deleted vehicle not found"))
+        );
     }
 
     // aux method
