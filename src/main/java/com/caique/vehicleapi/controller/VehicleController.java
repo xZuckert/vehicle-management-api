@@ -2,7 +2,6 @@ package com.caique.vehicleapi.controller;
 
 import com.caique.vehicleapi.dto.VehicleRequest;
 import com.caique.vehicleapi.dto.VehicleResponse;
-import com.caique.vehicleapi.model.Vehicle;
 import com.caique.vehicleapi.service.VehicleService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;

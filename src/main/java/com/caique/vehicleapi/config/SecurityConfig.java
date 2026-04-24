@@ -1,5 +1,7 @@
 package com.caique.vehicleapi.config;
 
+import com.caique.vehicleapi.security.CustomAccessDeniedHandler;
+import com.caique.vehicleapi.security.CustomAuthenticationEntryPoint;
 import com.caique.vehicleapi.security.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,13 +25,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(s ->
-                        s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler(accessDeniedHandler)
+                        .authenticationEntryPoint(authenticationEntryPoint)
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
@@ -38,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers("/vehicles/**")
                         .hasRole("ADMIN")
                         .anyRequest().authenticated()
+
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

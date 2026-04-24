@@ -2,9 +2,12 @@ package com.caique.vehicleapi.controller;
 
 import com.caique.vehicleapi.dto.AuthResponse;
 import com.caique.vehicleapi.dto.LoginRequest;
+import com.caique.vehicleapi.exception.BadRequestException;
+import com.caique.vehicleapi.exception.UnauthorizedException;
 import com.caique.vehicleapi.model.AppUser;
 import com.caique.vehicleapi.repository.UserRepository;
 import com.caique.vehicleapi.security.JwtService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,27 +30,39 @@ public class AuthController {
     private final PasswordEncoder encoder;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest req) {
+    public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest req) {
 
-        Authentication auth = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        req.username(),
-                        req.password()
-                )
-        );
+        try {
+            Authentication auth = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            req.username(),
+                            req.password()
+                    )
+            );
 
-        String token = jwtService.generateToken((UserDetails) auth.getPrincipal());
+            String token = jwtService.generateToken((UserDetails) auth.getPrincipal());
 
-        return ResponseEntity.ok(new AuthResponse(token, "Bearer"));
+            return ResponseEntity.ok(new AuthResponse(token, "Bearer"));
+
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid username or password");
+        }
     }
 
     @PostMapping("/register")
-    public void register(@RequestBody LoginRequest req) {
+    public ResponseEntity<Void> register(@RequestBody @Valid LoginRequest req) {
+
+        if (repo.findByUsername(req.username()).isPresent()) {
+            throw new BadRequestException("Username already exists");
+        }
+
         AppUser user = new AppUser();
         user.setUsername(req.username());
         user.setPassword(encoder.encode(req.password()));
         user.setRoles(List.of("ROLE_USER"));
 
         repo.save(user);
+
+        return ResponseEntity.ok().build();
     }
 }

@@ -2,6 +2,7 @@ package com.caique.vehicleapi.service;
 
 import com.caique.vehicleapi.dto.VehicleRequest;
 import com.caique.vehicleapi.dto.VehicleResponse;
+import com.caique.vehicleapi.exception.NotFoundException;
 import com.caique.vehicleapi.model.Vehicle;
 import com.caique.vehicleapi.repository.VehicleRepository;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class VehicleService {
     public VehicleResponse getById(Long id) {
         return toResponse(
                 repository.findByIdAndActiveTrue(id)
-                        .orElseThrow(() -> new RuntimeException("Vehicle not found"))
+                        .orElseThrow(() -> new NotFoundException("Vehicle not found"))
         );
     }
 
@@ -68,7 +69,7 @@ public class VehicleService {
     public VehicleResponse update(Long id, VehicleRequest request) {
 
         Vehicle existing = repository.findByIdAndActiveTrue(id)
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+                .orElseThrow(() -> new NotFoundException("Vehicle not found"));
 
         existing.setBrand(request.brand());
         existing.setModel(request.model());
@@ -82,7 +83,8 @@ public class VehicleService {
     // patch vehicle
     public VehicleResponse patch(Long id, VehicleRequest request) {
 
-        Vehicle existing = repository.findByIdAndActiveTrue(id).orElseThrow(() -> new RuntimeException("Vehicle not found"));
+        Vehicle existing = repository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new NotFoundException("Vehicle not found"));
 
         if (request.brand() != null) existing.setBrand(request.brand());
         if (request.model() != null) existing.setModel(request.model());
@@ -96,7 +98,8 @@ public class VehicleService {
     // soft delete
     public void delete(Long id) {
 
-        Vehicle vehicle = repository.findByIdAndActiveTrue(id).orElseThrow(() -> new RuntimeException("Vehicle not found"));
+        Vehicle vehicle = repository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new NotFoundException("Vehicle not found"));
 
         vehicle.setActive(false);
         repository.save(vehicle);
@@ -114,7 +117,7 @@ public class VehicleService {
     public VehicleResponse getDeletedById(Long id) {
         return toResponse(
                 repository.findByIdAndActiveFalse(id)
-                .orElseThrow(() -> new RuntimeException("Deleted vehicle not found"))
+                        .orElseThrow(() -> new NotFoundException("Deleted vehicle not found"))
         );
     }
 
