@@ -8,6 +8,9 @@ import com.caique.vehicleapi.model.AppUser;
 import com.caique.vehicleapi.repository.UserRepository;
 import com.caique.vehicleapi.security.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +36,11 @@ public class AuthController {
     private final PasswordEncoder encoder;
 
     @Operation(summary = "Authenticate user and return JWT token")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Invalid credentials", content = @Content)
+    })
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest req) {
 
@@ -54,6 +62,11 @@ public class AuthController {
     }
 
     @Operation(summary = "Authenticate user and return JWT token")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Created", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Conflict", content = @Content)
+    })
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody @Valid LoginRequest req) {
 

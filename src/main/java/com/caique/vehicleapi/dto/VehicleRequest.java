@@ -5,12 +5,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
+@Schema(description = "Vehicle creation request")
 public record VehicleRequest(
-        @Schema(example = "Toyota")
+        @Schema(example = "Toyota", required = true)
         @NotBlank(message = "Brand is required")
         String brand,
 
-        @Schema(example = "Corolla")
+        @Schema(example = "Corolla", required = true)
         @NotBlank(message = "Model is required")
         String model,
 

@@ -1,16 +1,22 @@
 package com.caique.vehicleapi.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     // 400 - Validation Error
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -70,7 +76,7 @@ public class GlobalExceptionHandler {
     }
 
     // 403 - Forbidden
-    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiError> handleForbidden(
             org.springframework.security.access.AccessDeniedException ex,
             HttpServletRequest request
@@ -103,17 +109,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
-    // Fallback
+    // 500 - Internal Server Error
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneric(
             Exception ex,
             HttpServletRequest request
     ) {
+        log.error("Unexpected error occurred", ex);
+
         ApiError error = new ApiError(
                 LocalDateTime.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Internal Server Error",
-                ex.getMessage(),
+                "An unexpected error occurred",
                 request.getRequestURI()
         );
 

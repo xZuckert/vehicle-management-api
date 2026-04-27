@@ -5,8 +5,8 @@ import com.caique.vehicleapi.dto.VehicleResponse;
 import com.caique.vehicleapi.service.VehicleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,15 +26,12 @@ public class VehicleController {
     }
 
     // GET all
-    @Operation(summary = "Get all vehicles with optional filters")
-    @ApiResponse(
-            responseCode = "200",
-            description = "List of vehicles",
-            content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = VehicleResponse.class)
-            )
-    )
+    @Operation(summary = "List vehicles", description = "Returns all active vehicles with optional filters")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+    })
     @GetMapping
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public List<VehicleResponse> getAll(
@@ -49,8 +46,12 @@ public class VehicleController {
 
     // Get by ID
     @Operation(summary = "Get vehicle by ID")
-    @ApiResponse(responseCode = "200", description = "Vehicle found")
-    @ApiResponse(responseCode = "404", description = "Vehicle not found")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content)
+    })
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public VehicleResponse getById(@PathVariable Long id) {
@@ -59,8 +60,12 @@ public class VehicleController {
 
     // POST
     @Operation(summary = "Create a new vehicle (ADMIN only)")
-    @ApiResponse(responseCode = "201", description = "Vehicle created")
-    @ApiResponse(responseCode = "400", description = "Invalid data")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Created", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+    })
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public VehicleResponse create(@RequestBody @Valid VehicleRequest request) {
@@ -69,6 +74,13 @@ public class VehicleController {
 
     // PUT
     @Operation(summary = "Update vehicle completely (ADMIN only)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content)
+    })
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public VehicleResponse update(@PathVariable Long id, @RequestBody @Valid VehicleRequest request) {
@@ -77,6 +89,13 @@ public class VehicleController {
 
     // PATCH
     @Operation(summary = "Partially update vehicle (ADMIN only)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content)
+    })
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public VehicleResponse patch(@PathVariable Long id, @RequestBody VehicleRequest request) {
@@ -85,7 +104,12 @@ public class VehicleController {
 
     // soft DELETE)
     @Operation(summary = "Soft delete vehicle (ADMIN only)")
-    @ApiResponse(responseCode = "204", description = "Vehicle deleted")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "No Content", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content)
+    })
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
@@ -94,6 +118,11 @@ public class VehicleController {
 
     // see deleted data using GET {{base_url}}/vehicles/deleted
     @Operation(summary = "Get all deleted vehicles (ADMIN only)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
+    })
     @GetMapping("/deleted")
     @PreAuthorize("hasRole('ADMIN')")
     public List<VehicleResponse> getDeleted() {
@@ -102,6 +131,12 @@ public class VehicleController {
 
     // see deleted data using ID
     @Operation(summary = "Get deleted vehicle by ID (ADMIN only)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Not Found", content = @Content)
+    })
     @GetMapping("/deleted/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public VehicleResponse getDeletedById(@PathVariable Long id) {
