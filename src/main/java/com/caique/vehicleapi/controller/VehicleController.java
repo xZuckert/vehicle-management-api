@@ -3,12 +3,18 @@ package com.caique.vehicleapi.controller;
 import com.caique.vehicleapi.dto.VehicleRequest;
 import com.caique.vehicleapi.dto.VehicleResponse;
 import com.caique.vehicleapi.service.VehicleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Vehicles", description = "Vehicle management APIs")
 @RestController
 @RequestMapping("/vehicles")
 public class VehicleController {
@@ -20,6 +26,15 @@ public class VehicleController {
     }
 
     // GET all
+    @Operation(summary = "Get all vehicles with optional filters")
+    @ApiResponse(
+            responseCode = "200",
+            description = "List of vehicles",
+            content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = VehicleResponse.class)
+            )
+    )
     @GetMapping
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public List<VehicleResponse> getAll(
@@ -33,6 +48,9 @@ public class VehicleController {
     }
 
     // Get by ID
+    @Operation(summary = "Get vehicle by ID")
+    @ApiResponse(responseCode = "200", description = "Vehicle found")
+    @ApiResponse(responseCode = "404", description = "Vehicle not found")
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public VehicleResponse getById(@PathVariable Long id) {
@@ -40,6 +58,9 @@ public class VehicleController {
     }
 
     // POST
+    @Operation(summary = "Create a new vehicle (ADMIN only)")
+    @ApiResponse(responseCode = "201", description = "Vehicle created")
+    @ApiResponse(responseCode = "400", description = "Invalid data")
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public VehicleResponse create(@RequestBody @Valid VehicleRequest request) {
@@ -47,6 +68,7 @@ public class VehicleController {
     }
 
     // PUT
+    @Operation(summary = "Update vehicle completely (ADMIN only)")
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public VehicleResponse update(@PathVariable Long id, @RequestBody @Valid VehicleRequest request) {
@@ -54,6 +76,7 @@ public class VehicleController {
     }
 
     // PATCH
+    @Operation(summary = "Partially update vehicle (ADMIN only)")
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public VehicleResponse patch(@PathVariable Long id, @RequestBody VehicleRequest request) {
@@ -61,6 +84,8 @@ public class VehicleController {
     }
 
     // soft DELETE)
+    @Operation(summary = "Soft delete vehicle (ADMIN only)")
+    @ApiResponse(responseCode = "204", description = "Vehicle deleted")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable Long id) {
@@ -68,6 +93,7 @@ public class VehicleController {
     }
 
     // see deleted data using GET {{base_url}}/vehicles/deleted
+    @Operation(summary = "Get all deleted vehicles (ADMIN only)")
     @GetMapping("/deleted")
     @PreAuthorize("hasRole('ADMIN')")
     public List<VehicleResponse> getDeleted() {
@@ -75,6 +101,7 @@ public class VehicleController {
     }
 
     // see deleted data using ID
+    @Operation(summary = "Get deleted vehicle by ID (ADMIN only)")
     @GetMapping("/deleted/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public VehicleResponse getDeletedById(@PathVariable Long id) {

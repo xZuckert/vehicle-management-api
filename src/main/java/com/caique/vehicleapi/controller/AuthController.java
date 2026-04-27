@@ -7,6 +7,8 @@ import com.caique.vehicleapi.exception.UnauthorizedException;
 import com.caique.vehicleapi.model.AppUser;
 import com.caique.vehicleapi.repository.UserRepository;
 import com.caique.vehicleapi.security.JwtService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Authentication", description = "Authentication and authorization")
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class AuthController {
     private final UserRepository repo;
     private final PasswordEncoder encoder;
 
+    @Operation(summary = "Authenticate user and return JWT token")
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest req) {
 
@@ -49,6 +53,7 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Authenticate user and return JWT token")
     @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestBody @Valid LoginRequest req) {
 

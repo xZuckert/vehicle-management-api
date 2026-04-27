@@ -1,5 +1,6 @@
 package com.caique.vehicleapi.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,6 +21,7 @@ public class Vehicle {
     private String color;
     private Double price;
 
+    @Schema(hidden = true)
     private Boolean active = true;
 
     // empty constructor
