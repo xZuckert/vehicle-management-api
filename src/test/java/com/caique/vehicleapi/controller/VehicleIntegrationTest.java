@@ -4,6 +4,7 @@ import com.caique.vehicleapi.dto.LoginRequest;
 import com.caique.vehicleapi.dto.VehicleRequest;
 import com.caique.vehicleapi.model.AppUser;
 import com.caique.vehicleapi.repository.UserRepository;
+import com.caique.vehicleapi.repository.VehicleRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,9 @@ class VehicleIntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
+    private VehicleRepository vehicleRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -36,6 +40,7 @@ class VehicleIntegrationTest {
     @BeforeEach
     void setup() {
         userRepository.deleteAll();
+        vehicleRepository.deleteAll();
 
         webTestClient = WebTestClient.bindToServer()
                 .baseUrl("http://localhost:" + port)
@@ -163,5 +168,32 @@ class VehicleIntegrationTest {
                 .header("Authorization", "Bearer " + token)
                 .exchange()
                 .expectStatus().isOk();
+    }
+
+    @Test
+    void shouldFailWhenPlateDuplicated() throws Exception {
+
+        createUser("admin", "123", List.of("ROLE_ADMIN"));
+        String token = loginAndGetToken("admin", "123");
+
+        VehicleRequest vehicle = new VehicleRequest(
+                "Fiat", "Uno", 2010, "Black", 20000.0, "ABC1D23"
+        );
+
+        // first create
+        webTestClient.post()
+                .uri("/vehicles")
+                .header("Authorization", "Bearer " + token)
+                .bodyValue(vehicle)
+                .exchange()
+                .expectStatus().isCreated();
+
+        // second create (duplicated)
+        webTestClient.post()
+                .uri("/vehicles")
+                .header("Authorization", "Bearer " + token)
+                .bodyValue(vehicle)
+                .exchange()
+                .expectStatus().isEqualTo(409);
     }
 }

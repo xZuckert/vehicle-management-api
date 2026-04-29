@@ -2,6 +2,7 @@ package com.caique.vehicleapi.service;
 
 import com.caique.vehicleapi.dto.VehicleRequest;
 import com.caique.vehicleapi.dto.VehicleResponse;
+import com.caique.vehicleapi.repository.VehicleRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,8 +18,13 @@ class VehicleServiceIntegrationTest {
     @Autowired
     private VehicleService service;
 
+    @Autowired
+    private VehicleRepository vehicleRepository;
+
     @Test
     void shouldCreateVehicle() {
+
+        vehicleRepository.deleteAll();
 
         VehicleRequest request = new VehicleRequest(
                 "Fiat",

@@ -3,6 +3,7 @@ package com.caique.vehicleapi.service;
 import com.caique.vehicleapi.dto.VehicleRequest;
 import com.caique.vehicleapi.dto.VehicleResponse;
 import com.caique.vehicleapi.exception.NotFoundException;
+import com.caique.vehicleapi.exception.ConflictException;
 import com.caique.vehicleapi.model.Vehicle;
 import com.caique.vehicleapi.repository.VehicleRepository;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,10 @@ public class VehicleService {
 
     // create vehicle
     public VehicleResponse create(VehicleRequest request) {
+
+        if (repository.existsByPlate(request.plate())) {
+            throw new ConflictException("Plate already exists");
+        }
 
         Vehicle v = new Vehicle();
         v.setBrand(request.brand());

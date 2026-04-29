@@ -2,6 +2,7 @@ package com.caique.vehicleapi.service;
 
 import com.caique.vehicleapi.dto.VehicleRequest;
 import com.caique.vehicleapi.dto.VehicleResponse;
+import com.caique.vehicleapi.exception.ConflictException;
 import com.caique.vehicleapi.model.Vehicle;
 import com.caique.vehicleapi.repository.VehicleRepository;
 import org.junit.jupiter.api.Test;
@@ -47,5 +48,19 @@ class VehicleServiceUnitTest {
         assertEquals("Fiat", response.brand());
 
         verify(repository).save(any());
+    }
+
+    @Test
+    void shouldFailWhenPlateAlreadyExists() {
+
+        VehicleRequest request = new VehicleRequest(
+                "Fiat", "Uno", 2010, "Black", 20000.0, "ABC1D23"
+        );
+
+        when(repository.existsByPlate("ABC1D23")).thenReturn(true);
+
+        assertThrows(ConflictException.class, () -> service.create(request));
+
+        verify(repository, never()).save(any());
     }
 }
