@@ -56,12 +56,12 @@ class VehicleControllerTest {
     void shouldCreateVehicle() throws Exception {
 
         VehicleRequest request = new VehicleRequest(
-                "Fiat", "Stilo", 2008, "Gray", 25000.0
+                "Fiat", "Stilo", 2008, "Gray", 25000.0, "ABC1D23"
         );
 
         when(service.create(request))
                 .thenReturn(new VehicleResponse(
-                        1L, "Fiat", "Stilo", 2008, "Gray", 25000.0
+                        1L, "Fiat", "Stilo", 2008, "Gray", 25000.0, "ABC1D23"
                 ));
 
         mockMvc.perform(post("/vehicles")
@@ -76,7 +76,7 @@ class VehicleControllerTest {
     void shouldReturnBadRequest_whenInvalidData() throws Exception {
 
         VehicleRequest request = new VehicleRequest(
-                "", "", null, "", -10.0 // dados inválidos
+                "", "", null, "", -10.0, "" // dados inválidos
         );
 
         mockMvc.perform(post("/vehicles")
@@ -100,7 +100,7 @@ class VehicleControllerTest {
 
         when(service.getById(1L))
                 .thenReturn(new VehicleResponse(
-                        1L, "Fiat", "Stilo", 2008, "Gray", 25000.0
+                        1L, "Fiat", "Stilo", 2008, "Gray", 25000.0, "ABC1D23"
                 ));
 
         mockMvc.perform(get("/vehicles/1"))
@@ -119,12 +119,12 @@ class VehicleControllerTest {
     void shouldUpdateVehicle() throws Exception {
 
         VehicleRequest request = new VehicleRequest(
-                "Fiat", "Uno", 2008, "Black", 20000.0
+                "Fiat", "Uno", 2008, "Black", 20000.0, "ABC1D23"
         );
 
         when(service.update(eq(1L), any()))
                 .thenReturn(new VehicleResponse(
-                        1L, "Fiat", "Uno", 2008, "Black", 20000.0
+                        1L, "Fiat", "Uno", 2008, "Black", 20000.0, "ABC1D23"
                 ));
 
         mockMvc.perform(put("/vehicles/1")
@@ -137,10 +137,10 @@ class VehicleControllerTest {
     @Test
     void shouldListVehiclesWithFilters() throws Exception {
 
-        when(service.getWithFilters("Fiat", 2008, "Black", 10000.0, 30000.0))
+        when(service.getWithFilters("Fiat", 2008, "Black", 10000.0, 30000.0, "ABC1D23"))
                 .thenReturn(List.of(
                         new VehicleResponse(
-                                1L, "Fiat", "Uno", 2008, "Black", 20000.0
+                                1L, "Fiat", "Uno", 2008, "Black", 20000.0, "ABC1D23"
                         )
                 ));
 
@@ -149,7 +149,8 @@ class VehicleControllerTest {
                         .param("year", "2008")
                         .param("color", "Black")
                         .param("minPrice", "10000")
-                        .param("maxPrice", "30000"))
+                        .param("maxPrice", "30000")
+                        .param("plate", "ABC1D23"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].brand").value("Fiat"));
     }

@@ -1,10 +1,7 @@
 package com.caique.vehicleapi.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +17,10 @@ public class Vehicle {
     private Integer vehicleYear;
     private String color;
     private Double price;
+    // Vehicle.java
+
+    @Column(unique = true, nullable = false)
+    private String plate;
 
     @Schema(hidden = true)
     private Boolean active = true;

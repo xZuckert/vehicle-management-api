@@ -30,7 +30,8 @@ class VehicleServiceUnitTest {
                 "Stilo",
                 2008,
                 "Gray",
-                25000.0
+                25000.0,
+                "ABC1D23"
         );
 
         Vehicle saved = new Vehicle();

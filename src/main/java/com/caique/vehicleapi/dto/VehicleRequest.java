@@ -26,6 +26,10 @@ public record VehicleRequest(
         @Schema(example = "130000")
         @NotNull(message = "Price is required")
         @Positive(message = "Price must be positive")
-        Double price
+        Double price,
+
+        @Schema(example = "ABC1D23")
+        @NotBlank(message = "Plate is required")
+        String plate
 ) {
 }

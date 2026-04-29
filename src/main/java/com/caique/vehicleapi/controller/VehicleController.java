@@ -41,9 +41,10 @@ public class VehicleController {
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) String color,
             @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String plate
     ) {
-        return service.getWithFilters(brand, year, color, minPrice, maxPrice);
+        return service.getWithFilters(brand, year, color, minPrice, maxPrice, plate);
     }
 
     // Get by ID

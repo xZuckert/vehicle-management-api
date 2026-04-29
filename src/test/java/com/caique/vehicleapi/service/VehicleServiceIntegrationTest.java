@@ -25,7 +25,8 @@ class VehicleServiceIntegrationTest {
                 "Stilo",
                 2008,
                 "Scandium Gray",
-                25000.0
+                25000.0,
+                "ABC1D23"
         );
 
         VehicleResponse response = service.create(request);

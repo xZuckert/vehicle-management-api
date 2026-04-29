@@ -76,7 +76,7 @@ class VehicleIntegrationTest {
         String token = loginAndGetToken("admin", "123");
 
         VehicleRequest vehicle = new VehicleRequest(
-                "Fiat", "Stilo", 2008, "Gray", 25000.0
+                "Fiat", "Stilo", 2008, "Gray", 25000.0, "ABC1D23"
         );
 
         webTestClient.post()
@@ -93,7 +93,7 @@ class VehicleIntegrationTest {
     void shouldFailWithoutToken() {
 
         VehicleRequest vehicle = new VehicleRequest(
-                "Fiat", "Stilo", 2008, "Gray", 25000.0
+                "Fiat", "Stilo", 2008, "Gray", 25000.0, "ABC1D23"
         );
 
         webTestClient.post()
@@ -111,7 +111,7 @@ class VehicleIntegrationTest {
         String token = loginAndGetToken("user", "123");
 
         VehicleRequest vehicle = new VehicleRequest(
-                "Fiat", "Uno", 2010, "Black", 15000.0
+                "Fiat", "Uno", 2010, "Black", 15000.0, "ABC1D23"
         );
 
         webTestClient.post()
@@ -126,7 +126,7 @@ class VehicleIntegrationTest {
     void shouldFailWithInvalidToken() {
 
         VehicleRequest vehicle = new VehicleRequest(
-                "Fiat", "Uno", 2010, "Black", 15000.0
+                "Fiat", "Uno", 2010, "Black", 15000.0, "ABC1D23"
         );
 
         webTestClient.post()

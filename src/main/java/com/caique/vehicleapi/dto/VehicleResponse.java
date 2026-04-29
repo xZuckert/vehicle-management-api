@@ -19,6 +19,9 @@ public record VehicleResponse(
         String color,
 
         @Schema(example = "130000")
-        Double price
+        Double price,
+
+        @Schema(example = "ABC1D23")
+        String plate
 ) {
 }

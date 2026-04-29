@@ -39,7 +39,8 @@ public class VehicleService {
             Integer year,
             String color,
             Double minPrice,
-            Double maxPrice
+            Double maxPrice,
+            String plate
     ) {
         return repository.findByActiveTrue().stream()
                 .filter(v -> brand == null || v.getBrand().equalsIgnoreCase(brand))
@@ -47,6 +48,7 @@ public class VehicleService {
                 .filter(v -> color == null || (v.getColor() != null && v.getColor().equalsIgnoreCase(color)))
                 .filter(v -> minPrice == null || v.getPrice() >= minPrice)
                 .filter(v -> maxPrice == null || v.getPrice() <= maxPrice)
+                .filter(v -> plate == null || (v.getPlate() != null && v.getPlate().equalsIgnoreCase(plate)))
                 .map(this::toResponse)
                 .toList();
     }
@@ -60,6 +62,7 @@ public class VehicleService {
         v.setVehicleYear(request.vehicleYear());
         v.setColor(request.color());
         v.setPrice(request.price());
+        v.setPlate(request.plate());
         v.setActive(true);
 
         return toResponse(repository.save(v));
@@ -76,6 +79,7 @@ public class VehicleService {
         existing.setVehicleYear(request.vehicleYear());
         existing.setColor(request.color());
         existing.setPrice(request.price());
+        existing.setPlate(request.plate());
 
         return toResponse(repository.save(existing));
     }
@@ -91,6 +95,7 @@ public class VehicleService {
         if (request.vehicleYear() != null) existing.setVehicleYear(request.vehicleYear());
         if (request.color() != null) existing.setColor(request.color());
         if (request.price() != null) existing.setPrice(request.price());
+        if (request.plate() != null) existing.setPlate(request.plate());
 
         return toResponse(repository.save(existing));
     }
@@ -129,7 +134,8 @@ public class VehicleService {
                 v.getModel(),
                 v.getVehicleYear(),
                 v.getColor(),
-                v.getPrice()
+                v.getPrice(),
+                v.getPlate()
         );
     }
 }
