@@ -16,7 +16,7 @@ import java.util.Map;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret}") // 🔥 vem do application.properties
+    @Value("${jwt.secret}")
     private String secret;
 
     private Key getKey() {

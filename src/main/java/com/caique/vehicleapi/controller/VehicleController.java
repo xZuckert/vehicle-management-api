@@ -9,9 +9,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @Tag(name = "Vehicles", description = "Vehicle management APIs")
@@ -66,12 +68,17 @@ public class VehicleController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
     })
+
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public VehicleResponse create(@RequestBody @Valid VehicleRequest request) {
-        return service.create(request);
-    }
+    public ResponseEntity<VehicleResponse> create(@RequestBody @Valid VehicleRequest request) {
 
+        VehicleResponse response = service.create(request);
+
+        URI location = URI.create("/vehicles/" + response.id());
+
+        return ResponseEntity.created(location).body(response);
+    }
     // PUT
     @Operation(summary = "Update vehicle completely (ADMIN only)")
     @ApiResponses({
@@ -102,7 +109,7 @@ public class VehicleController {
         return service.patch(id, request);
     }
 
-    // soft DELETE)
+    // soft DELETE
     @Operation(summary = "Soft delete vehicle (ADMIN only)")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "No Content", content = @Content),
@@ -112,8 +119,9 @@ public class VehicleController {
     })
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     // see deleted data using GET {{base_url}}/vehicles/deleted
