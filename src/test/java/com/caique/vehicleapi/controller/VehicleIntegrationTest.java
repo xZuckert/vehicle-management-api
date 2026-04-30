@@ -196,4 +196,26 @@ class VehicleIntegrationTest {
                 .exchange()
                 .expectStatus().isEqualTo(409);
     }
+
+    @Test
+    void shouldReturnPagedVehicles() throws Exception {
+
+        createUser("user", "123", List.of("ROLE_USER"));
+        String token = loginAndGetToken("user", "123");
+
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/vehicles")
+                        .queryParam("page", 0)
+                        .queryParam("size", 5)
+                        .queryParam("sort", "price,desc")
+                        .build()
+                )
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.content").exists()
+                .jsonPath("$.size").isEqualTo(5);
+    }
 }

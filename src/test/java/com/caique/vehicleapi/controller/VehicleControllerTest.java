@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -137,12 +138,16 @@ class VehicleControllerTest {
     @Test
     void shouldListVehiclesWithFilters() throws Exception {
 
-        when(service.getWithFilters("Fiat", 2008, "Black", 10000.0, 30000.0, "ABC1D23"))
-                .thenReturn(List.of(
+        when(service.getWithFilters(
+                "Fiat", 2008, "Black",
+                10000.0, 30000.0, "ABC1D23",
+                0, 10, "id,asc"
+        ))
+                .thenReturn(new PageImpl<>(List.of(
                         new VehicleResponse(
                                 1L, "Fiat", "Uno", 2008, "Black", 20000.0, "ABC1D23"
                         )
-                ));
+                )));
 
         mockMvc.perform(get("/vehicles")
                         .param("brand", "Fiat")
@@ -152,6 +157,6 @@ class VehicleControllerTest {
                         .param("maxPrice", "30000")
                         .param("plate", "ABC1D23"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].brand").value("Fiat"));
+                .andExpect(jsonPath("$.content[0].brand").value("Fiat"));
     }
 }

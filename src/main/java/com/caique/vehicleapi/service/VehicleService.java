@@ -6,6 +6,8 @@ import com.caique.vehicleapi.exception.NotFoundException;
 import com.caique.vehicleapi.exception.ConflictException;
 import com.caique.vehicleapi.model.Vehicle;
 import com.caique.vehicleapi.repository.VehicleRepository;
+import com.caique.vehicleapi.specification.VehicleSpecification;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,7 +36,7 @@ public class VehicleService {
         );
     }
 
-    // find with filters
+    /*/ find with filters
     public List<VehicleResponse> getWithFilters(
             String brand,
             Integer year,
@@ -52,6 +54,40 @@ public class VehicleService {
                 .filter(v -> plate == null || (v.getPlate() != null && v.getPlate().equalsIgnoreCase(plate)))
                 .map(this::toResponse)
                 .toList();
+    }*/
+    public Page<VehicleResponse> getWithFilters(
+            String brand,
+            Integer year,
+            String color,
+            Double minPrice,
+            Double maxPrice,
+            String plate,
+            int page,
+            int size,
+            String sort
+    ) {
+
+        // sort's parce: "price,desc"
+        String[] sortParams = sort.split(",");
+
+        String sortField = sortParams[0];
+        Sort.Direction direction =
+                (sortParams.length > 1 && sortParams[1].equalsIgnoreCase("desc"))
+                        ? Sort.Direction.DESC
+                        : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(direction, sortField)
+        );
+
+        var spec = VehicleSpecification.withFilters(
+                brand, year, color, minPrice, maxPrice, plate
+        );
+
+        return repository.findAll(spec, pageable)
+                .map(this::toResponse);
     }
 
     // create vehicle
@@ -143,4 +179,7 @@ public class VehicleService {
                 v.getPlate()
         );
     }
+
+    // Pagging
+
 }

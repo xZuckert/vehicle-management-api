@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class VehicleController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
     })
-    @GetMapping
+    /*@GetMapping
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public List<VehicleResponse> getAll(
             @RequestParam(required = false) String brand,
@@ -45,6 +46,33 @@ public class VehicleController {
             @RequestParam(required = false) String plate
     ) {
         return service.getWithFilters(brand, year, color, minPrice, maxPrice, plate);
+    }*/
+    @GetMapping
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public ResponseEntity<Page<VehicleResponse>> getAll(
+
+            // filters
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) String color,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String plate,
+
+            // pagging
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+
+            // ordination
+            @RequestParam(defaultValue = "id,asc") String sort
+    ) {
+
+        return ResponseEntity.ok(
+                service.getWithFilters(
+                        brand, year, color, minPrice, maxPrice, plate,
+                        page, size, sort
+                )
+        );
     }
 
     // Get by ID
@@ -151,4 +179,7 @@ public class VehicleController {
     public VehicleResponse getDeletedById(@PathVariable Long id) {
         return service.getDeletedById(id);
     }
+
+    // pagging
+
 }
