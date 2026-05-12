@@ -81,7 +81,7 @@ class VehicleIntegrationTest {
         String token = loginAndGetToken("admin", "123");
 
         VehicleRequest vehicle = new VehicleRequest(
-                "Fiat", "Stilo", 2008, "Gray", 25000.0, "ABC1D23"
+                "Fiat", "Stilo", 2008, "Gray", 25000.0, "AAA1111"
         );
 
         webTestClient.post()
@@ -98,7 +98,7 @@ class VehicleIntegrationTest {
     void shouldFailWithoutToken() {
 
         VehicleRequest vehicle = new VehicleRequest(
-                "Fiat", "Stilo", 2008, "Gray", 25000.0, "ABC1D23"
+                "Fiat", "Stilo", 2008, "Gray", 25000.0, "AAA1111"
         );
 
         webTestClient.post()
@@ -116,7 +116,7 @@ class VehicleIntegrationTest {
         String token = loginAndGetToken("user", "123");
 
         VehicleRequest vehicle = new VehicleRequest(
-                "Fiat", "Uno", 2010, "Black", 15000.0, "ABC1D23"
+                "Fiat", "Uno", 2010, "Black", 15000.0, "AAA1111"
         );
 
         webTestClient.post()
@@ -131,7 +131,7 @@ class VehicleIntegrationTest {
     void shouldFailWithInvalidToken() {
 
         VehicleRequest vehicle = new VehicleRequest(
-                "Fiat", "Uno", 2010, "Black", 15000.0, "ABC1D23"
+                "Fiat", "Uno", 2010, "Black", 15000.0, "AAA1111"
         );
 
         webTestClient.post()
@@ -177,7 +177,7 @@ class VehicleIntegrationTest {
         String token = loginAndGetToken("admin", "123");
 
         VehicleRequest vehicle = new VehicleRequest(
-                "Fiat", "Uno", 2010, "Black", 20000.0, "ABC1D23"
+                "Fiat", "Uno", 2010, "Black", 20000.0, "AAA1111"
         );
 
         // first create
@@ -217,5 +217,20 @@ class VehicleIntegrationTest {
                 .expectBody()
                 .jsonPath("$.content").exists()
                 .jsonPath("$.size").isEqualTo(5);
+    }
+
+    @Test
+    void shouldReturnVehicleReportByBrand() throws Exception {
+
+        createUser("user", "123", List.of("ROLE_USER"));
+        String token = loginAndGetToken("user", "123");
+
+        webTestClient.get()
+                .uri("/vehicles/reports/by-brand")
+                .header("Authorization", "Bearer " + token)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$").isArray();
     }
 }

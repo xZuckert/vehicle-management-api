@@ -1,5 +1,6 @@
 package com.caique.vehicleapi.repository;
 
+import com.caique.vehicleapi.dto.VehicleBrandReport;
 import com.caique.vehicleapi.model.Vehicle;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

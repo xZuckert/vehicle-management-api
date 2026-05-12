@@ -1,5 +1,6 @@
 package com.caique.vehicleapi.service;
 
+import com.caique.vehicleapi.dto.VehicleBrandReport;
 import com.caique.vehicleapi.dto.VehicleRequest;
 import com.caique.vehicleapi.dto.VehicleResponse;
 import com.caique.vehicleapi.exception.NotFoundException;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class VehicleService {
@@ -36,25 +38,7 @@ public class VehicleService {
         );
     }
 
-    /*/ find with filters
-    public List<VehicleResponse> getWithFilters(
-            String brand,
-            Integer year,
-            String color,
-            Double minPrice,
-            Double maxPrice,
-            String plate
-    ) {
-        return repository.findByActiveTrue().stream()
-                .filter(v -> brand == null || v.getBrand().equalsIgnoreCase(brand))
-                .filter(v -> year == null || (v.getVehicleYear() != null && v.getVehicleYear().equals(year)))
-                .filter(v -> color == null || (v.getColor() != null && v.getColor().equalsIgnoreCase(color)))
-                .filter(v -> minPrice == null || v.getPrice() >= minPrice)
-                .filter(v -> maxPrice == null || v.getPrice() <= maxPrice)
-                .filter(v -> plate == null || (v.getPlate() != null && v.getPlate().equalsIgnoreCase(plate)))
-                .map(this::toResponse)
-                .toList();
-    }*/
+    // find with filters
     public Page<VehicleResponse> getWithFilters(
             String brand,
             Integer year,
@@ -88,6 +72,25 @@ public class VehicleService {
 
         return repository.findAll(spec, pageable)
                 .map(this::toResponse);
+    }
+
+    // report by brand
+    public List<VehicleBrandReport> getVehiclesByBrand() {
+
+        List<Vehicle> vehicles = repository.findByActiveTrue();
+
+        return vehicles.stream()
+                .collect(Collectors.groupingBy(
+                        Vehicle::getBrand,
+                        Collectors.counting()
+                ))
+                .entrySet()
+                .stream()
+                .map(entry -> new VehicleBrandReport(
+                        entry.getKey(),
+                        entry.getValue()
+                ))
+                .toList();
     }
 
     // create vehicle
@@ -179,7 +182,4 @@ public class VehicleService {
                 v.getPlate()
         );
     }
-
-    // Pagging
-
 }

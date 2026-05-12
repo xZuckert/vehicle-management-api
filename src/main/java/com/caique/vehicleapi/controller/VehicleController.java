@@ -1,5 +1,6 @@
 package com.caique.vehicleapi.controller;
 
+import com.caique.vehicleapi.dto.VehicleBrandReport;
 import com.caique.vehicleapi.dto.VehicleRequest;
 import com.caique.vehicleapi.dto.VehicleResponse;
 import com.caique.vehicleapi.service.VehicleService;
@@ -35,18 +36,6 @@ public class VehicleController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content)
     })
-    /*@GetMapping
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public List<VehicleResponse> getAll(
-            @RequestParam(required = false) String brand,
-            @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) String color,
-            @RequestParam(required = false) Double minPrice,
-            @RequestParam(required = false) Double maxPrice,
-            @RequestParam(required = false) String plate
-    ) {
-        return service.getWithFilters(brand, year, color, minPrice, maxPrice, plate);
-    }*/
     @GetMapping
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<Page<VehicleResponse>> getAll(
@@ -89,6 +78,13 @@ public class VehicleController {
         return service.getById(id);
     }
 
+    // Get report by brand
+    @GetMapping("/reports/by-brand")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public List<VehicleBrandReport> getVehiclesByBrand() {
+        return service.getVehiclesByBrand();
+    }
+
     // POST
     @Operation(summary = "Create a new vehicle (ADMIN only)")
     @ApiResponses({
@@ -108,6 +104,7 @@ public class VehicleController {
 
         return ResponseEntity.created(location).body(response);
     }
+
     // PUT
     @Operation(summary = "Update vehicle completely (ADMIN only)")
     @ApiResponses({
@@ -179,7 +176,4 @@ public class VehicleController {
     public VehicleResponse getDeletedById(@PathVariable Long id) {
         return service.getDeletedById(id);
     }
-
-    // pagging
-
 }
