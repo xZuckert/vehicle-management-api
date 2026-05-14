@@ -1,6 +1,6 @@
 package com.caique.vehicleapi.service;
 
-import com.caique.vehicleapi.dto.DollarRateResponse;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -15,6 +15,7 @@ public class DollarService {
         this.restClient = RestClient.create();
     }
 
+    @Cacheable(value = "dollar-rate")
     public Double getDollarRate() {
 
         Map response = restClient.get()

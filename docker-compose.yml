@@ -18,6 +18,13 @@ services:
       timeout: 5s
       retries: 10
 
+  redis:
+    image: redis:7
+    container_name: vehicle-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
   api:
     build: .
     container_name: vehicle-api
