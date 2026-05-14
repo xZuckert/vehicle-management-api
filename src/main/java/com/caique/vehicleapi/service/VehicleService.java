@@ -1,6 +1,7 @@
 package com.caique.vehicleapi.service;
 
 import com.caique.vehicleapi.dto.VehicleBrandReport;
+import com.caique.vehicleapi.dto.VehiclePriceUsdResponse;
 import com.caique.vehicleapi.dto.VehicleRequest;
 import com.caique.vehicleapi.dto.VehicleResponse;
 import com.caique.vehicleapi.exception.NotFoundException;
@@ -11,15 +12,19 @@ import com.caique.vehicleapi.specification.VehicleSpecification;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class VehicleService {
     private final VehicleRepository repository;
+    private final DollarService dollarService;
 
-    public VehicleService(VehicleRepository repository){
+    public VehicleService(VehicleRepository repository, DollarService dollarService){
         this.repository = repository;
+        this.dollarService = dollarService;
     }
     
     // find all
@@ -180,6 +185,31 @@ public class VehicleService {
                 v.getColor(),
                 v.getPrice(),
                 v.getPlate()
+        );
+    }
+
+    // price in USD
+    public VehiclePriceUsdResponse getPriceInUsd(Long id) {
+
+        Vehicle vehicle = repository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new NotFoundException("Vehicle not found"));
+
+        Double dollarRate = dollarService.getDollarRate();
+
+        BigDecimal usdPrice = BigDecimal.valueOf(vehicle.getPrice())
+                .divide(
+                        BigDecimal.valueOf(dollarRate),
+                        2,
+                        RoundingMode.HALF_UP
+                );
+
+        return new VehiclePriceUsdResponse(
+                vehicle.getId(),
+                vehicle.getBrand(),
+                vehicle.getModel(),
+                vehicle.getPrice(),
+                usdPrice,
+                dollarRate
         );
     }
 }

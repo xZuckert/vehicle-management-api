@@ -1,5 +1,6 @@
 package com.caique.vehicleapi.controller;
 
+import com.caique.vehicleapi.dto.VehiclePriceUsdResponse;
 import com.caique.vehicleapi.dto.VehicleRequest;
 import com.caique.vehicleapi.dto.VehicleResponse;
 import com.caique.vehicleapi.exception.NotFoundException;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.caique.vehicleapi.service.VehicleService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -158,5 +160,28 @@ class VehicleControllerTest {
                         .param("plate", "ABC1D23"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].brand").value("Fiat"));
+    }
+
+    @Test
+    void shouldReturnVehiclePriceInUsd() throws Exception {
+
+        VehiclePriceUsdResponse response =
+                new VehiclePriceUsdResponse(
+                        1L,
+                        "Fiat",
+                        "Stilo",
+                        25000.0,
+                        new BigDecimal("4512.33"),
+                        5.54
+                );
+
+        when(service.getPriceInUsd(1L))
+                .thenReturn(response);
+
+        mockMvc.perform(get("/vehicles/1/price-usd"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.vehicleId").value(1))
+                .andExpect(jsonPath("$.brand").value("Fiat"))
+                .andExpect(jsonPath("$.priceUSD").value(4512.33));
     }
 }

@@ -1,6 +1,7 @@
 package com.caique.vehicleapi.controller;
 
 import com.caique.vehicleapi.dto.VehicleBrandReport;
+import com.caique.vehicleapi.dto.VehiclePriceUsdResponse;
 import com.caique.vehicleapi.dto.VehicleRequest;
 import com.caique.vehicleapi.dto.VehicleResponse;
 import com.caique.vehicleapi.service.VehicleService;
@@ -175,5 +176,14 @@ public class VehicleController {
     @PreAuthorize("hasRole('ADMIN')")
     public VehicleResponse getDeletedById(@PathVariable Long id) {
         return service.getDeletedById(id);
+    }
+
+    // get price in USD
+    @GetMapping("/{id}/price-usd")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public VehiclePriceUsdResponse getVehiclePriceInUsd(
+            @PathVariable Long id
+    ) {
+        return service.getPriceInUsd(id);
     }
 }
